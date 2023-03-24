@@ -14,7 +14,7 @@ data class WeatherResponseModel(
 	val timezone: Int? = null,
 
 	@field:SerializedName("main")
-	val main: Main? = null,
+	var main: Main? = null,
 
 	@field:SerializedName("clouds")
 	val clouds: Clouds? = null,
@@ -64,10 +64,10 @@ data class Main(
 	val tempMin: Double? = null,
 
 	@field:SerializedName("grnd_level")
-	val grndLevel: Int? = null,
+	val grndLevel: Double? = null,
 
 	@field:SerializedName("humidity")
-	val humidity: Int? = null,
+	val humidity: Double? = null,
 
 	@field:SerializedName("pressure")
 	val pressure: Int? = null,

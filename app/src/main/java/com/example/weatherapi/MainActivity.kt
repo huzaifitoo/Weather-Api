@@ -12,7 +12,6 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import com.example.weatherapi.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -36,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
+     getDataFromSharedPreferences()
         getCurrentLocation()
     }
 
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                     if (location == null) {
                         Toast.makeText(this, "null recieved ", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
+                     //   Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
 
 //                        binding.tvLatitude.text = "" + location.latitude
 //                        binding.tvLongitude.text = "" + location.longitude
@@ -80,21 +80,55 @@ class MainActivity : AppCompatActivity() {
                 ) {
                    if (response.isSuccessful){
 
+                       saveDataToSharedPreferences(WeatherResponseModel())
+
+
                        setDataOnView(response.body())
                        //Log.d("TAG", "Response data: $WeatherResponseModel")
                       // Log.d("TAG",response.body().toString())
-                       Toast.makeText(this@MainActivity, "API coming", Toast.LENGTH_SHORT).show()
+                       Toast.makeText(this@MainActivity, "API Data coming", Toast.LENGTH_SHORT).show()
                    }
+
+
+
+
+
                 }
 
                 override fun onFailure(call: Call<WeatherResponseModel>, t: Throwable) {
 
-                    Toast.makeText(this@MainActivity, "Error something", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Error in Api data", Toast.LENGTH_SHORT).show()
                     Log.d("TAG",t.message.toString())
                 }
 
             })
     }
+
+    fun saveDataToSharedPreferences(weatherResponseModel: WeatherResponseModel?) {
+        val sharedPreferences = getSharedPreferences("WeatherData", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("MaxTemp", weatherResponseModel?.main?.tempMax?.let { kelvinToCelsius(it) }.toString())
+        editor.putString("Temp", weatherResponseModel?.main?.temp?.let { kelvinToCelsius(it) }.toString())
+        editor.putString("MinTemp", weatherResponseModel?.main?.tempMin?.let { kelvinToCelsius(it) }.toString())
+        editor.putString("FeelsLike", weatherResponseModel?.main?.feelsLike?.let { kelvinToCelsius(it) }.toString())
+        editor.apply()
+    }
+    private fun getDataFromSharedPreferences(): WeatherResponseModel? {
+        val sharedPreferences = getSharedPreferences("WeatherData", Context.MODE_PRIVATE)
+        val maxTemp = sharedPreferences.getString("MaxTemp", null)?.toDoubleOrNull()
+        val temp = sharedPreferences.getString("Temp", null)?.toDoubleOrNull()
+        val minTemp = sharedPreferences.getString("MinTemp", null)?.toDoubleOrNull()
+        val feelsLike = sharedPreferences.getString("FeelsLike", null)?.toDoubleOrNull()
+
+        if (maxTemp != null && temp != null && minTemp != null && feelsLike != null) {
+            val weatherResponseModel = WeatherResponseModel()
+            val main = Main(maxTemp, minTemp, temp, feelsLike)
+            weatherResponseModel.main = main
+            return weatherResponseModel
+        }
+        return null
+    }
+
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun setDataOnView(body: WeatherResponseModel?) {
