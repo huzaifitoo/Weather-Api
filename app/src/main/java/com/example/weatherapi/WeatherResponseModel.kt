@@ -24,9 +24,9 @@ data class WeatherResponseModel(
 
 	@field:SerializedName("dt")
 	val dt: Int? = null,
-
-	@field:SerializedName("coord")
-	val coord: Coord? = null,
+//
+//	@field:SerializedName("coord")
+//	val coord: Coord? = null,
 
 	@field:SerializedName("weather")
 	val weather: List<WeatherItem?>? = null,
@@ -48,13 +48,20 @@ data class WeatherResponseModel(
 ) : Parcelable
 
 @Parcelize
+data class Clouds(
+
+	@field:SerializedName("all")
+	val all: Int? = null
+) : Parcelable
+
+@Parcelize
 data class Main(
 
 	@field:SerializedName("temp")
-	val temp: Int? = null,
+	val temp: Double? = null,
 
 	@field:SerializedName("temp_min")
-	val tempMin: Int? = null,
+	val tempMin: Double? = null,
 
 	@field:SerializedName("grnd_level")
 	val grndLevel: Int? = null,
@@ -69,17 +76,33 @@ data class Main(
 	val seaLevel: Int? = null,
 
 	@field:SerializedName("feels_like")
-	val feelsLike: Int? = null,
+	val feelsLike: Double? = null,
 
 	@field:SerializedName("temp_max")
-	val tempMax: Int? = null
+	val tempMax: Double? = null
 ) : Parcelable
 
-@Parcelize
-data class Clouds(
+//@Parcelize
+//data class Coord(
+//
+//	@field:SerializedName("lon")
+//	val lon: Double? = null,
+//
+//	@field:SerializedName("lat")
+//	val lat: Double? = null
+//) : Parcelable
 
-	@field:SerializedName("all")
-	val all: Int? = null
+@Parcelize
+data class Wind(
+
+	@field:SerializedName("deg")
+	val deg: Int? = null,
+
+//	@field:SerializedName("speed")
+//	val speed: Any? = null,
+//
+//	@field:SerializedName("gust")
+//	val gust: Any? = null
 ) : Parcelable
 
 @Parcelize
@@ -115,27 +138,4 @@ data class WeatherItem(
 
 	@field:SerializedName("id")
 	val id: Int? = null
-) : Parcelable
-
-@Parcelize
-data class Coord(
-
-	@field:SerializedName("lon")
-	val lon: Int? = null,
-
-	@field:SerializedName("lat")
-	val lat: Int? = null
-) : Parcelable
-
-@Parcelize
-data class Wind(
-
-	@field:SerializedName("deg")
-	val deg: Int? = null,
-
-	@field:SerializedName("speed")
-	val speed: Int? = null,
-
-	@field:SerializedName("gust")
-	val gust: Int? = null
 ) : Parcelable

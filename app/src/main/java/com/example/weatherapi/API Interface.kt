@@ -10,7 +10,7 @@ interface ApiInterface {
     fun getCurrentWeather(
         @Query("lat") latitude: String,
         @Query("lon") longitude: String,
-        @Query("APP_ID") api_key: String
+        @Query("appid") api_key: String
     ): Call<WeatherResponseModel>
 
     fun getCityWeather(

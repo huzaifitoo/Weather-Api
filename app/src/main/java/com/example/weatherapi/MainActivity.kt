@@ -12,12 +12,14 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import com.example.weatherapi.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         getCurrentLocation()
-
     }
 
     private fun getCurrentLocation() {
@@ -80,8 +81,8 @@ class MainActivity : AppCompatActivity() {
                    if (response.isSuccessful){
 
                        setDataOnView(response.body())
-
-                       Log.d("TAG",response.body().toString())
+                       //Log.d("TAG", "Response data: $WeatherResponseModel")
+                      // Log.d("TAG",response.body().toString())
                        Toast.makeText(this@MainActivity, "API coming", Toast.LENGTH_SHORT).show()
                    }
                 }
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<WeatherResponseModel>, t: Throwable) {
 
                     Toast.makeText(this@MainActivity, "Error something", Toast.LENGTH_SHORT).show()
+                    Log.d("TAG",t.message.toString())
                 }
 
             })
@@ -101,12 +103,20 @@ class MainActivity : AppCompatActivity() {
         val currentDate = sdf.format(Date())
         binding.tvDateTime.text = currentDate
 
-        binding.tvMaxTemp.text = "Day "+ body!!.main?.tempMax
-        binding.tvMinTemp.text = "Day " + body!!.main?.tempMin
+        binding.tvMaxTemp.text = "Day "+ body!!.main?.tempMax?.let { kelvinToCelsius(it) } +"°C"
+        binding.temp.text = body!!.main?.temp?.let { kelvinToCelsius(it) }.toString() +"°C"
+       binding.tvMinTemp.text = "Night " + body!!.main?.tempMin?.let { kelvinToCelsius(it) } +"°C"
 
-        binding.tvFeelsLike.text = body!!.main?.feelsLike.toString()
-
+       binding.tvFeelsLike.text = body!!.main?.feelsLike?.let { kelvinToCelsius(it) }.toString()+"°C"
+      //  binding.tvWeatherType.text = body!!.weather?.get(2)?.main
     }
+    private fun kelvinToCelsius(temp: Double): Double {
+        var intTemp = temp
+        intTemp = intTemp.minus(273)
+        return intTemp.toBigDecimal().setScale(1,RoundingMode.UP).toDouble()
+    }
+
+
     private fun isLocationEnabled(): Boolean {
         val locationManager: LocationManager =
             getSystemService(Context.LOCATION_SERVICE) as LocationManager
